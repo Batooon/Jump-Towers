@@ -1,8 +1,18 @@
-﻿public class ColorChangingPlatform : Platform
+﻿using UnityEngine;
+
+public class ColorChangingPlatform : Platform
 {
-    // public override bool TryAccept(Player player)
-    // {
-    //     //Если цвет игрока совпадает - return true;
-    //     return true;
-    // }
+    private Color _color;
+    
+    public override bool TryAccept(Player player)
+    {
+        _jumpedOn = true;
+        return player.Renderer.material.color == _color;
+    }
+
+    public override void SetArgs(PlatformArgs args)
+    {
+        base.SetArgs(args);
+        _color = args.PlatformColor;
+    }
 }

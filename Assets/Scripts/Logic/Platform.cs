@@ -14,7 +14,9 @@ public abstract class Platform : MonoBehaviour
         private set;
     }
 
-    private bool _jumpedOn;
+    [SerializeField] protected Renderer _renderer;
+
+    protected bool _jumpedOn;
 
     public virtual bool TryAccept(Player player)
     {
@@ -22,13 +24,18 @@ public abstract class Platform : MonoBehaviour
         return true;
     }
 
+    public virtual void SetArgs(PlatformArgs args)
+    {
+        _renderer.material.color = args.PlatformColor;
+    }
+
     private void OnBecameInvisible()
     {
         if (_jumpedOn == false)
             return;
-        OnDisappeared?.Invoke(this);
         gameObject.SetActive(false);
         _jumpedOn = false;
+        OnDisappeared?.Invoke(this);
     }
 }
 

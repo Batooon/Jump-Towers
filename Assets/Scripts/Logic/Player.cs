@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float _jumpHeight;
     [SerializeField] private float _jumpDuration;
+    [SerializeField] private float _randomizerRepeatRate;
 
     public Renderer Renderer
     {
@@ -16,10 +18,10 @@ public class Player : MonoBehaviour
 
     private PlayerRandomizer _playerRandomizer;
     private List<PlayerRandomizer> _availableRandomizeStates;
-    private Rigidbody _rigidbody;
     private Vector3 _nextDestination;
     private Platform _nextPlatform;
     private PlatformWay _platformWay;
+    private bool _isHoldingState;
 
     public void Init(PlatformWay platformWay, PlayerSettings playerSettings)
     {
@@ -30,7 +32,7 @@ public class Player : MonoBehaviour
             new ColorRandomizer(this, playerSettings)
         };
         SetRandomizer<ColorRandomizer>();
-        InvokeRepeating(nameof(Randomize), 0f, .5f);
+        StartCoroutine(Randomize());
     }
 
     public void SetRandomizer<T>() where T : PlayerRandomizer
@@ -44,10 +46,27 @@ public class Player : MonoBehaviour
         GetNextDestinationPoint();
     }
 
+    private void Update()
+    {
+        if (Input.GetMouseButton(0) && _isHoldingState == false)
+        {
+            _isHoldingState = true;
+        }
+
+        if (Input.GetMouseButtonUp(0) && _isHoldingState)
+        {
+            _isHoldingState = false;
+            StartCoroutine(Randomize());
+        }
+    }
+
     private void GetNextDestinationPoint()
     {
         if (_nextPlatform != null && _nextPlatform.TryAccept(this) == false)
+        {
+            Debug.Log("You Loose");
             return;
+        }
         _nextPlatform = _platformWay.GetNextPlatform();
         _nextDestination = _nextPlatform.JumpPoint.position;
         Jump();
@@ -59,8 +78,13 @@ public class Player : MonoBehaviour
             .SetEase(Ease.Linear);
     }
 
-    private void Randomize()
+    private IEnumerator Randomize()
     {
-        _playerRandomizer.Randomize();
+        while (_isHoldingState == false)
+        {
+            yield return new WaitForSecondsRealtime(_randomizerRepeatRate);
+            if(_isHoldingState == false)
+                _playerRandomizer.Randomize();
+        }
     }
 }

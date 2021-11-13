@@ -9,7 +9,7 @@ public class EntryPoint : MonoBehaviour
 
     private void Awake()
     {
-        _platformSpawner.Init();
+        _platformSpawner.Init(_playerSettings);
         
         _player.Init(_platformSpawner.Platforms, _playerSettings);
     }

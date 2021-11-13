@@ -27,8 +27,9 @@ public class PlatformSpawner : MonoBehaviour
 
     private Vector3 _nextPlatformPosition;
 
-    public void Init()
+    public void Init(PlayerSettings playerSettings)
     {
+        _platformFactory.Init(playerSettings);
         Platforms = new PlatformWay();
         _platformPool = new ObjectPool<Platform>(_platformPrefab, _poolAmount);
         
@@ -75,6 +76,8 @@ public class PlatformSpawner : MonoBehaviour
 
     private void ReplacePlatform(Platform platform)
     {
+        if(platform == null)
+            return;
         platform.OnDisappeared -= ReplacePlatform;
         _platformCounter += 1;
         var newPlatformType = GetNextPlatformType();
@@ -86,6 +89,7 @@ public class PlatformSpawner : MonoBehaviour
 
     private void SetupPlatform(Platform platform)
     {
+        platform.SetArgs(_platformFactory.GetArgs(_currentPlatformType));
         platform.transform.position = _nextPlatformPosition;
         Platforms.AddPlatform(platform);
         _nextPlatformPosition += _offset;
@@ -132,4 +136,11 @@ public enum PlatformType
 public class PlatformConfig
 {
     public Platform Prefab;
+    // public Color PlatformColor;
+}
+
+[Serializable]
+public class PlatformArgs
+{
+    public Color PlatformColor;
 }
