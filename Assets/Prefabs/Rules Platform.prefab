@@ -55,7 +55,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 38b9c7c0b63a31d4495f6d7502642b67, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <JumpPoint>k__BackingField: {fileID: 5083848782302634472}
+  _renderer: {fileID: 5083848782077309104}
 --- !u!1 &5083848782077309117
 GameObject:
   m_ObjectHideFlags: 0

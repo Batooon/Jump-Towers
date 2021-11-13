@@ -54,7 +54,8 @@ MeshRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: 7b02b3c96ed2d624fa1ba6b3e32c4744, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -89,6 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <JumpPoint>k__BackingField: {fileID: 5083848782302634472}
+  _renderer: {fileID: 5083848782077309104}
 --- !u!1 &5083848782077309117
 GameObject:
   m_ObjectHideFlags: 0
