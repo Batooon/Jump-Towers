@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 public abstract class Platform : MonoBehaviour
 {
+    public event Action<Platform> OnDisappeared;
+    
     [field: SerializeField]
     public Transform JumpPoint
     {
@@ -12,28 +14,21 @@ public abstract class Platform : MonoBehaviour
         private set;
     }
 
-    public abstract bool TryAccept(Player player);
-    
+    private bool _jumpedOn;
+
+    public virtual bool TryAccept(Player player)
+    {
+        _jumpedOn = true;
+        return true;
+    }
+
     private void OnBecameInvisible()
     {
+        if (_jumpedOn == false)
+            return;
+        OnDisappeared?.Invoke(this);
         gameObject.SetActive(false);
-    }
-}
-
-public class StartingPlatform : Platform
-{
-    public override bool TryAccept(Player player)
-    {
-        return true;
-    }
-}
-
-public class FormChangingPlatform : Platform
-{
-    public override bool TryAccept(Player player)
-    {
-        //Если форма игрока совпадает - return true;
-        return true;
+        _jumpedOn = false;
     }
 }
 
