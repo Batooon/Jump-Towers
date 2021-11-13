@@ -3,7 +3,6 @@ using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
-//[RequireComponent(typeof(Rigidbody))]
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _jumpHeight;
@@ -19,6 +18,7 @@ public class Player : MonoBehaviour
     private List<PlayerRandomizer> _availableRandomizeStates;
     private Rigidbody _rigidbody;
     private Vector3 _nextDestination;
+    private Platform _nextPlatform;
     private PlatformWay _platformWay;
 
     public void Init(PlatformWay platformWay, PlayerSettings playerSettings)
@@ -39,14 +39,17 @@ public class Player : MonoBehaviour
         _playerRandomizer = state;
     }
 
-    private void Awake()
+    private void Start()
     {
         GetNextDestinationPoint();
     }
 
     private void GetNextDestinationPoint()
     {
-        _nextDestination = _platformWay.GetNextDestinationPoint().position;
+        if (_nextPlatform != null && _nextPlatform.TryAccept(this) == false)
+            return;
+        _nextPlatform = _platformWay.GetNextPlatform();
+        _nextDestination = _nextPlatform.JumpPoint.position;
         Jump();
     }
 
