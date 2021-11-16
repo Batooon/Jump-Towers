@@ -12,8 +12,8 @@ public class PlatformSpawner : MonoBehaviour
     [SerializeField, MinMaxSlider(3,20)] private Vector2Int _ruleChangerPlatformRange;
     [SerializeField] private PlatformFactory _platformFactory;
     [SerializeField, Range(3, 5)] private int _amountToGenerateFirst;
-
     private PlatformType _currentPlatformType = PlatformType.ColorChanging;
+    
     private int _platformCounter;
     private int _nextPlatformRuleChanger;
 
@@ -32,13 +32,15 @@ public class PlatformSpawner : MonoBehaviour
         _platformFactory.Init(playerSettings);
         Platforms = new PlatformWay();
         _platformPool = new ObjectPool<Platform>(_platformPrefab, _poolAmount);
-        
+        _currentPlatformType = playerSettings.StartingRules;
         var colorChangingPlatform = _platformFactory.GetConfig(PlatformType.ColorChanging).Prefab;
         AddPlatformToPool(colorChangingPlatform);
         var formChangingPlatform = _platformFactory.GetConfig(PlatformType.FormChanging).Prefab;
         AddPlatformToPool(formChangingPlatform);
         var rulesChangingPlatform = _platformFactory.GetConfig(PlatformType.RulesChanging).Prefab;
         AddPlatformToPool(rulesChangingPlatform, 1);
+        var startingPlatform = _platformFactory.GetConfig(PlatformType.StartingPlatform).Prefab;
+        AddPlatformToPool(startingPlatform, 1);
         
         _nextPlatformPosition = _startSpawn.position;
         RandomizeRuleChangerValue();
@@ -65,9 +67,10 @@ public class PlatformSpawner : MonoBehaviour
     }
 
     private void PlacePlatform()
-    {
+    { 
         _platformCounter += 1;
-        var platformType = GetNextPlatformType();
+        PlatformType platformType;
+        platformType = _platformCounter == 1 ? PlatformType.StartingPlatform : GetNextPlatformType();
         var platform = _platformPool.GetObject(_platformFactory.GetConfig(platformType).Prefab);
         SetupPlatform(platform);
         platform.OnDisappeared += ReplacePlatform;
@@ -76,19 +79,23 @@ public class PlatformSpawner : MonoBehaviour
 
     private void ReplacePlatform(Platform platform)
     {
-        if(platform == null)
-            return;
         platform.OnDisappeared -= ReplacePlatform;
         _platformCounter += 1;
         var newPlatformType = GetNextPlatformType();
         platform = _platformPool.GetObject(_platformFactory.GetConfig(newPlatformType).Prefab);
+        if (platform == null)
+            return;
         SetupPlatform(platform);
         platform.OnDisappeared += ReplacePlatform;
+        if (platform.gameObject.activeInHierarchy)
+            return;
         platform.gameObject.SetActive(true);
     }
 
     private void SetupPlatform(Platform platform)
     {
+        if (platform == null)
+            return;
         platform.SetArgs(_platformFactory.GetArgs(_currentPlatformType));
         platform.transform.position = _nextPlatformPosition;
         Platforms.AddPlatform(platform);
@@ -129,7 +136,8 @@ public enum PlatformType
 {
     ColorChanging = 0,
     FormChanging = 1,
-    RulesChanging = 2
+    RulesChanging = 2,
+    StartingPlatform = 3
 }
 
 [Serializable]
@@ -143,4 +151,5 @@ public class PlatformConfig
 public class PlatformArgs
 {
     public Color PlatformColor;
+    public Shapes Shape;
 }

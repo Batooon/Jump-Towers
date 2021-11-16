@@ -3,7 +3,6 @@
     public override bool TryAccept(Player player)
     {
         _jumpedOn = true;
-        //Если форма игрока совпадает - return true;
-        return true;
+        return player.CurrentShape==_currentShape;
     }
 }

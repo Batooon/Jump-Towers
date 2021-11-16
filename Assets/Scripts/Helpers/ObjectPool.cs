@@ -48,6 +48,8 @@ public class ObjectPool<T> where T : Platform
     {
         foreach (var obj in _pooledObjects)
         {
+            if (obj == null)
+                return null;
             if(obj.gameObject.activeInHierarchy)
                 continue;
             if (obj.GetType() == searchObject.GetType())
